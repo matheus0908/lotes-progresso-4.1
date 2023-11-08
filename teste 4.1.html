@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+   
+    <title>Acompanhamento de Fluxo de Trabalho</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+            color: #333333;
+        }
+
+        header
+
+         {
+            background-color: #111111 ;
+
+            color: #ffffff;
+            padding: 10px;
+            text-align: center;
+            position: relative;
+        }
+
+        header img {
+            position: absolute;
+            top: 10px;
+            left: 20px;
+            height: 60px;
+            width: 100px;
+        }
+
+        .container {
+            background-color: #ffffff;
+            width: 80%;
+            margin: -85px auto;
+            padding: 200px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        h2 {
+            text-align: center;
+            background-color: #ff4500;
+            color: #111111;
+            font-size: 30px;
+            width: 101%;
+             border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        h3 {
+            text-align: center;
+            background-color: #ff4500;
+            color: #111111;
+            font-weight: bold;
+            width: 101%;
+             border: 1px solid #ccc;
+            border-radius: 5px;
+           
+            font-size: 30px;
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+
+        }
+
+         input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+
+
+        }
+
+        select {
+            margin-top: 10px;
+            width: auto;
+            padding: 10px;
+            
+             border: 1px solid #ccc;
+            border-radius: 5px;
+           
+
+        }
+
+        button {
+            background-color: #0074d9;
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #ff4500;
+            margin-top: 15px;
+
+        }
+
+        button:hover {
+            background-color: #ed9121 ;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #ff4500;
+            color: #ffffff;
+            font-weight: bold;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="LOGO OTC BRANCO.png" alt="Logo">
+        <h1>Acompanhamento de Fluxo de Trabalho</h1>
+    </header>
+
+    <div class="container">
+        <form id="workflowForm">
+            <label for="nomeLote">Nome do Lote:</label>
+            <input type="text" id="nomeLote" required>
+
+            <label for="mesLote">Mês do Lote:</label>
+            <input type="text" id="mesLote" required>
+
+            <label for="dataEntrada">Data de Entrada:</label>
+            <input type="date" id="dataEntrada" required>
+
+            <label for="usuario">Usuário:</label>
+            <input type="text" id="usuario" required>
+
+            <label for="etapa">Etapa do Processo:</label>
+            <select id="etapa">
+                <option value="Recepção">Recepção</option>
+                <option value="Higienização">Higienização</option>
+                <option value="Digitalização A4">Digitalização A4</option>
+                <option value="Digitalização A0">Digitalização A0</option>
+                <option value="Conferência">Conferência</option>
+                <option value="Remontagem">Remontagem</option>
+                <option value="Disponibilização">Disponibilização</option>
+            </select>
+
+            <button type="button" onclick="adicionarLote()">Adicionar Lote</button>
+        </form>
+
+        
+
+        <h3>Pesquisar Progresso de Lote</h3>
+        <form>
+            <label for="pesquisarNomeLote">Nome do Lote:</label>
+            <input type="text" id="pesquisarNomeLote" required>
+
+            <label for="pesquisarMesLote">Mês do Lote:</label>
+            <input type="text" id="pesquisarMesLote" required>
+
+            <button type="button" onclick="pesquisarProgresso()">Pesquisar</button>
+        </form>
+
+        <ul id="resultadoPesquisa"></ul>
+        <h2>Progresso dos Lotes</h2>
+        <ul id="progressoLotes"></ul>
+    </div>
+
+    <script>
+        const workflow = {};
+
+        function adicionarLote() {
+            const nomeLote = document.getElementById("nomeLote").value;
+            const mesLote = document.getElementById("mesLote").value;
+            const dataEntrada = document.getElementById("dataEntrada").value;
+            const usuario = document.getElementById("usuario").value;
+            const etapa = document.getElementById("etapa").value;
+
+            const chaveLote = `${nomeLote} - ${mesLote}`;
+            if (!workflow[chaveLote]) {
+                workflow[chaveLote] = [];
+            }
+
+            workflow[chaveLote].push({
+                dataEntrada,
+                usuario,
+                etapa
+            });
+
+            atualizarListaProgresso();
+            limparCamposForm();
+        }
+
+        function atualizarListaProgresso() {
+            const progressoLotes = document.getElementById("progressoLotes");
+            progressoLotes.innerHTML = "";
+
+            for (const lote in workflow) {
+                for (const progresso of workflow[lote]) {
+                    const itemLista = document.createElement("li");
+                    itemLista.textContent = `Lote: ${lote}, Data de Entrada: ${progresso.dataEntrada}, Usuário: ${progresso.usuario}, Etapa: ${progresso.etapa}`;
+                    progressoLotes.appendChild(itemLista);
+                }
+            }
+        }
+
+        function pesquisarProgresso() {
+            const nomeLote = document.getElementById("pesquisarNomeLote").value;
+            const mesLote = document.getElementById("pesquisarMesLote").value;
+            const chaveLote = `${nomeLote} - ${mesLote}`;
+
+            const resultadoPesquisa = document.getElementById("resultadoPesquisa");
+            resultadoPesquisa.innerHTML = "";
+
+            if (workflow[chaveLote]) {
+                for (const progresso of workflow[chaveLote]) {
+                    const itemLista = document.createElement("li");
+                    itemLista.textContent = `Lote: ${chaveLote}, Data de Entrada: ${progresso.dataEntrada}, Usuário: ${progresso.usuario}, Etapa: ${progresso.etapa}`;
+                    resultadoPesquisa.appendChild(itemLista);
+                }
+            } else {
+                const mensagem = document.createElement("li");
+                mensagem.textContent = "Lote não encontrado.";
+                resultadoPesquisa.appendChild(mensagem);
+            }
+        }
+
+        function limparCamposForm() {
+            document.getElementById("nomeLote").value = "";
+            document.getElementById("mesLote").value = "";
+            document.getElementById("dataEntrada").value = "";
+            document.getElementById("usuario").value = "";
+            document.getElementById("etapa").value = "Recepção";
+        }
+    </script>
+</body>
+</html>
